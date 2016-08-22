@@ -1,0 +1,14 @@
+{{ define "title" }}
+  <title>Kneusa weather station</title>
+{{end}}
+
+{{ define "content" }}
+<h2>Kneusa weather station</h2><p />
+
+Current temperature: {{.Temperature}} <br /> 
+
+Statistics: </br>
+Daily high: {{.MaxTemp}} <br />
+Daily low:  {{.MinTemp}} <br />
+{{end}}
+

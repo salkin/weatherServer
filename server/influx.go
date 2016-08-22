@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type InfluxJson struct {
@@ -18,11 +19,35 @@ type InfluxJson struct {
 	} `json:"results"`
 }
 
-func GetTemperature() string {
-	request, err := http.NewRequest("GET", "http://192.168.1.252:8086/query?pretty", nil)
+type Temperature uint8
+
+const (
+	MIN = iota + 1
+	MAX
+	NOW
+)
+
+func buildQuery(t Temperature, d time.Time) string {
+	var q string
+	switch t {
+	case MIN:
+		next := d.AddDate(0, 0, -1)
+		q = "SELECT min(value) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+	case MAX:
+		next := d.AddDate(0, 0, -1)
+		q = "SELECT max(value) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+	case NOW:
+		q = "SELECT value FROM temperature WHERE time > now() - 1m LIMIT 1"
+	}
+	return q
+
+}
+
+func GetTemperature(query string) string {
+	request, err := http.NewRequest("GET", "http://192.168.1.252:8086/query", nil)
 	q := request.URL.Query()
 	q.Add("db", "weather")
-	q.Add("q", "SELECT value FROM temperature WHERE time > now() - 1m  LIMIT 1")
+	q.Add("q", query)
 	request.URL.RawQuery = q.Encode()
 
 	client := http.Client{}

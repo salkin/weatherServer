@@ -20,7 +20,8 @@ func getConfig() {
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", server.ServeMain)
+	server.InitTemplates()
 
+	router.HandleFunc("/", server.ServePage)
 	http.ListenAndServe(":8080", router)
 }
