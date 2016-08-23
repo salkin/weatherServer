@@ -32,10 +32,10 @@ func buildQuery(t Temperature, d time.Time) string {
 	switch t {
 	case MIN:
 		next := d.AddDate(0, 0, -1)
-		q = "SELECT min(value) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+		q = "SELECT bottom(value,1) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
 	case MAX:
 		next := d.AddDate(0, 0, -1)
-		q = "SELECT max(value) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+		q = "SELECT top(value,1) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
 	case NOW:
 		q = "SELECT value FROM temperature WHERE time > now() - 1m LIMIT 1"
 	}
