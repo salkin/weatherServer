@@ -6,7 +6,8 @@ import (
 )
 
 func TestGetTemperature(t *testing.T) {
-
+	inf := InfluxServ{}
+	inf.Server = "http://127.0.0.1:8086"
 }
 
 func TestBuildQuery(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 func getConfig() {
 	viper.AddConfigPath("/opt/weatherServer")
 	viper.SetConfigName("config")
-	viper.SetConfigType("json")
+	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Printf("Invalid: %s", err)
@@ -21,6 +21,9 @@ func getConfig() {
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	server.InitTemplates()
+
+	inf := server.InfluxServ{}
+	inf.Server = viper.GetString("InfluxServer")
 
 	router.HandleFunc("/", server.ServePage)
 	http.ListenAndServe(":8080", router)

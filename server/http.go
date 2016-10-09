@@ -14,6 +14,12 @@ type Weather struct {
 
 var templates map[string]*template.Template
 
+var infServer InfluxServ
+
+func SetServer(s InfluxServ) {
+	infServer = s
+}
+
 func InitTemplates() {
 	if templates == nil {
 		templates = make(map[string]*template.Template)
@@ -41,19 +47,21 @@ func servePage(w http.ResponseWriter, r *http.Request, name string, data map[str
 	fmt.Printf("Serving %s", name)
 	tmpl.ExecuteTemplate(w, "base", data)
 }
+
 func ServePage(w http.ResponseWriter, r *http.Request) {
 	var data map[string]interface{}
 	fmt.Printf("Try to serve")
 	data = make(map[string]interface{})
-	q := buildQuery(NOW, time.Now())
-	temp := GetTemperature(q)
-	data["Temperature"] = temp
-	q = buildQuery(MIN, time.Now())
-	temp = GetTemperature(q)
-	data["MinTemp"] = temp
-	q = buildQuery(MAX, time.Now())
-	temp = GetTemperature(q)
-	data["MaxTemp"] = temp
+	getTemp(&data, "Now", NOW)
+	getTemp(&data, "Min", MIN)
+	getTemp(&data, "Max", MAX)
 
 	servePage(w, r, "index.tmpl", data)
+}
+
+func getTemp(d *map[string]interface{}, k string, t int) {
+	q := buildQuery(t, time.Now())
+	temp := infServer.GetTemperature(q)
+	d[k+"Temp"] = temp.temp
+	d[k+"Time"] = temp.time
 }

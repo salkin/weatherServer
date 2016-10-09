@@ -20,6 +20,14 @@ type InfluxJson struct {
 }
 
 type Temperature uint8
+type Measurement struct {
+	temp float64
+	time string
+}
+
+type InfluxServ struct {
+	Server string
+}
 
 const (
 	MIN = iota + 1
@@ -31,11 +39,11 @@ func buildQuery(t Temperature, d time.Time) string {
 	var q string
 	switch t {
 	case MIN:
-		next := d.AddDate(0, 0, -1)
-		q = "SELECT bottom(value,1) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+		next := d.AddDate(0, 0, 1)
+		q = "SELECT bottom(value,1) FROM temperature WHERE time < '" + next.Format("2006-01-02") + "' and time > '" + d.Format("2006-01-02") + "'"
 	case MAX:
-		next := d.AddDate(0, 0, -1)
-		q = "SELECT top(value,1) FROM temperature WHERE time > '" + next.Format("2006-01-02") + "' and time < '" + d.Format("2006-01-02") + "'"
+		next := d.AddDate(0, 0, 1)
+		q = "SELECT top(value,1) FROM temperature WHERE time < '" + next.Format("2006-01-02") + "' and time > '" + d.Format("2006-01-02") + "'"
 	case NOW:
 		q = "SELECT value FROM temperature WHERE time > now() - 1m LIMIT 1"
 	}
@@ -43,8 +51,8 @@ func buildQuery(t Temperature, d time.Time) string {
 
 }
 
-func GetTemperature(query string) string {
-	request, err := http.NewRequest("GET", "http://192.168.1.252:8086/query", nil)
+func (inf InfluxServ) GetTemperature(query string) Measurement {
+	request, err := http.NewRequest("GET", inf.Server+"/query", nil)
 	q := request.URL.Query()
 	q.Add("db", "weather")
 	q.Add("q", query)
@@ -64,9 +72,10 @@ func GetTemperature(query string) string {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	var toRet float64
+	var toRet Measurement
 	inte := infl.Results[0].Series[0].Values[0]
-	toRet = inte[1].(float64)
+	toRet.temp = inte[1].(float64)
+	toRet.time = inte[0].(string)
 	tStr := strconv.FormatFloat(toRet, 'f', 1, 64)
 	return tStr
 }
