@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -51,7 +50,9 @@ func buildQuery(t Temperature, d time.Time) string {
 
 }
 
-func (inf InfluxServ) GetTemperature(query string) Measurement {
+func (inf InfluxServ) GetTemperature(query string) (Measurement, error) {
+	var meas Measurement
+	fmt.Printf("Server: %s", inf.Server)
 	request, err := http.NewRequest("GET", inf.Server+"/query", nil)
 	q := request.URL.Query()
 	q.Add("db", "weather")
@@ -62,6 +63,7 @@ func (inf InfluxServ) GetTemperature(query string) Measurement {
 	resp, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("error: %s", err.Error())
+		return meas, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -75,7 +77,15 @@ func (inf InfluxServ) GetTemperature(query string) Measurement {
 	var toRet Measurement
 	inte := infl.Results[0].Series[0].Values[0]
 	toRet.temp = inte[1].(float64)
-	toRet.time = inte[0].(string)
-	tStr := strconv.FormatFloat(toRet, 'f', 1, 64)
-	return tStr
+	toRet.time = timeToHours(inte[0].(string))
+	return toRet, nil
+}
+
+func timeToHours(s string) string {
+	layout := time.RFC3339Nano
+	t, err := time.Parse(layout, s)
+	if err != nil {
+		return ""
+	}
+	return t.Format("15:04")
 }

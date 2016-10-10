@@ -21,10 +21,11 @@ func getConfig() {
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	server.InitTemplates()
-
+	getConfig()
 	inf := server.InfluxServ{}
 	inf.Server = viper.GetString("InfluxServer")
-
+	server.SetServer(inf)
+	fmt.Printf("Using influx %s", viper.GetString("InfluxServer"))
 	router.HandleFunc("/", server.ServePage)
 	http.ListenAndServe(":8080", router)
 }

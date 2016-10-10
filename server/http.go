@@ -59,9 +59,15 @@ func ServePage(w http.ResponseWriter, r *http.Request) {
 	servePage(w, r, "index.tmpl", data)
 }
 
-func getTemp(d *map[string]interface{}, k string, t int) {
+func getTemp(d *map[string]interface{}, k string, t Temperature) {
 	q := buildQuery(t, time.Now())
-	temp := infServer.GetTemperature(q)
-	d[k+"Temp"] = temp.temp
-	d[k+"Time"] = temp.time
+	temp, err := infServer.GetTemperature(q)
+	if err != nil {
+
+	} else {
+		index := k + "Temp"
+		(*d)[index] = temp.temp
+		index = k + "Time"
+		(*d)[index] = temp.time
+	}
 }
