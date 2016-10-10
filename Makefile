@@ -11,6 +11,5 @@ arm:
 	mv weatherServer bin/
 
 package:
-	docker build -t  weatherServer ${PWD}
-	docker save -o weatherServer
+	docker build -t  nwik/weather-server ${PWD}
 

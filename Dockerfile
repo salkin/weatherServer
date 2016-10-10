@@ -3,6 +3,9 @@ MAINTAINER niklas.wik@iki.fi
 
 RUN mkdir -p /opt/weatherServer/templates
 
-COPY weatherServer /opt/weatherServer
+COPY bin/weatherServer /opt/weatherServer
+RUN chmod +x /opt/weatherServer/weatherServer
 COPY templates/*.tmpl /opt/weatherServer/templates/
-COPY config.yml /opt/weatherServer
+COPY config.yaml /opt/weatherServer
+
+ENTRYPOINT ["/opt/weatherServer/weatherServer"]
