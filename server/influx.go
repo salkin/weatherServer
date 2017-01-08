@@ -87,5 +87,7 @@ func timeToHours(s string) string {
 	if err != nil {
 		return ""
 	}
+	dur := time.Hour * 3
+	t = t.Add(dur)
 	return t.Format("15:04")
 }

@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/salkin/weatherServer/server"
 	"github.com/spf13/viper"
-	"net/http"
 )
 
 func getConfig() {
@@ -19,13 +20,15 @@ func getConfig() {
 }
 
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
+	router := mux.NewRouter().StrictSlash(false)
 	server.InitTemplates()
 	getConfig()
 	inf := server.InfluxServ{}
 	inf.Server = viper.GetString("InfluxServer")
 	server.SetServer(inf)
+	go server.CreateStat()
 	fmt.Printf("Using influx %s", viper.GetString("InfluxServer"))
 	router.HandleFunc("/", server.ServePage)
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.ListenAndServe(":8080", router)
 }

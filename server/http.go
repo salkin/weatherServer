@@ -48,6 +48,10 @@ func servePage(w http.ResponseWriter, r *http.Request, name string, data map[str
 	tmpl.ExecuteTemplate(w, "base", data)
 }
 
+func ServeFile(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func ServePage(w http.ResponseWriter, r *http.Request) {
 	var data map[string]interface{}
 	fmt.Printf("Try to serve")
@@ -55,8 +59,14 @@ func ServePage(w http.ResponseWriter, r *http.Request) {
 	getTemp(&data, "Now", NOW)
 	getTemp(&data, "Min", MIN)
 	getTemp(&data, "Max", MAX)
+	data["DailyPic"] = get_img_url()
 
 	servePage(w, r, "index.tmpl", data)
+}
+
+func get_img_url() string {
+
+	return "/static/test.png"
 }
 
 func getTemp(d *map[string]interface{}, k string, t Temperature) {

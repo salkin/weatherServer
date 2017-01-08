@@ -26,8 +26,8 @@ func TestTimeParse(t *testing.T) {
 	time := "2016-10-09T06:58:13.256652425Z"
 
 	res := timeToHours(time)
-	if res != "06:58" {
-		t.Fatalf("Expected: %s, got %s", "06:58", res)
+	if res != "09:58" {
+		t.Fatalf("Expected: %s, got %s", "09:58", res)
 	}
 
 }
