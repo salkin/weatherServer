@@ -17,7 +17,7 @@ func CreateStat(dir string, authToken string) {
 	for {
 		client := http.Client{}
 
-		httpReq, err := http.NewRequest("GET", "http://"+grafanaUser+":"+grafanaPassword+grafanaServer+"/render/dashboard/db/weather", nil)
+		httpReq, err := http.NewRequest("GET", "http://"+grafanaUser+":"+grafanaPassword+"@" +grafanaServer+"/render/dashboard/db/weather", nil)
 
 		res, err := client.Do(httpReq)
 		if err != nil {
