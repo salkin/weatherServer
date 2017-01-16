@@ -19,16 +19,16 @@ func CreateStat(dir string, authToken string) {
 
 		httpReq, err := http.NewRequest("GET", "http://"+grafanaUser+":"+grafanaPassword+grafanaServer+"/render/dashboard/db/weather", nil)
 
-		httpReq.Header.Add("Authorization", "Bearer "+authToken)
 		res, err := client.Do(httpReq)
 		if err != nil {
-
+			time.Sleep(10 * time.Minute)
+			continue
 		}
 		file, err := os.Create(dir + "/static/daily.png")
 		defer file.Close()
 		io.Copy(file, res.Body)
 
-		time.Sleep(time.Hour)
+		time.Sleep(10 * time.Minute)
 	}
 
 }
