@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/salkin/weatherServer/server"
@@ -26,9 +27,13 @@ func main() {
 	inf := server.InfluxServ{}
 	inf.Server = viper.GetString("InfluxServer")
 	server.SetServer(inf)
-	go server.CreateStat()
+	httpDir := viper.GetString("HttpDir")
+	go server.CreateStat(httpDir, viper.GetString("GrafanaAuthToken"))
+
+	os.Mkdir(httpDir+"static", os.ModeDir)
 	fmt.Printf("Using influx %s", viper.GetString("InfluxServer"))
 	router.HandleFunc("/", server.ServePage)
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(httpDir+"/static"))))
 	http.ListenAndServe(":8080", router)
 }

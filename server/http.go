@@ -66,7 +66,7 @@ func ServePage(w http.ResponseWriter, r *http.Request) {
 
 func get_img_url() string {
 
-	return "/static/test.png"
+	return "/static/daily.png"
 }
 
 func getTemp(d *map[string]interface{}, k string, t Temperature) {

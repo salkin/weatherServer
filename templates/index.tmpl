@@ -3,7 +3,10 @@
 {{end}}
 
 {{ define "content" }}
-<h2>Kneusa weather station</h2><p />
+<div class="content">
+<div class="header">
+  <h2>Kneusa weather station</h2>
+</div>
 
 Current temperature: {{.NowTemp}} &#8451; <br /> 
 
@@ -15,6 +18,6 @@ Daily low:  {{.MinTemp}} &#8451; - {{.MinTime}} <br />
 <p />
 Daily statistics: <p />
 <img src=" {{.DailyPic}} "/>
-
+</div>
 
 {{end}}
